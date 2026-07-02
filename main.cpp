@@ -1,8 +1,10 @@
 #include <iostream>
 #include <vector>
 #include <random>
+#include "rainstorm.hpp"
 
 int main() {
+    // Generate a random 100x100 map with values between 0 and 1
     std::vector<std::vector<float>> current_map = {};
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -16,6 +18,7 @@ int main() {
         current_map.push_back(row);
     }
 
+    // Apply smoothing to the map
     int iterations = 10;
 
     for (int iter = 0; iter < iterations; ++iter) {
@@ -26,6 +29,7 @@ int main() {
                 float sum = 0.0f;
                 int count = 0;
 
+                // Get positions of neighboring cells (including diagonals)
                 for (int dr = -1; dr <= 1; ++dr) {
                     for (int dc = -1; dc <= 1; ++dc) {
                         int nr = r + dr;
@@ -45,7 +49,9 @@ int main() {
         current_map = new_map;
     }
 
-    for (const auto& row : current_map) {
+    std::vector<std::vector<float>> eroded_map = rainstorm(current_map);
+
+    for (const auto& row : eroded_map) {
         for (const auto& value : row) {
             std::cout << value << " ";
         }
