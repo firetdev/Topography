@@ -20,6 +20,26 @@ void saveAsPPM(const std::vector<std::vector<float>>& map, const std::string& fi
     ofs.close();
 }
 
+void normalizeMap(std::vector<std::vector<float>>& map) {
+    float minVal = 1e9, maxVal = -1e9;
+    for (auto& row : map) {
+        for (float v : row) {
+            if (v < minVal) minVal = v;
+            if (v > maxVal) maxVal = v;
+        }
+    }
+
+    float range = maxVal - minVal;
+
+    if (range == 0) return;
+
+    for (auto& row : map) {
+        for (float& v : row) {
+            v = (v - minVal) / range;
+        }
+    }
+}
+
 int main() {
     // Generate a random map with values between 0 and 1
     std::vector<std::vector<float>> current_map = {};
@@ -29,8 +49,15 @@ int main() {
 
     int map_size = 1000;
 
-    int iterations = 50;  // Smoothing iterations
+    int iterations = 10;  // Smoothing iterations
     int rainstorms = 400;  // Number of rainstorm simulations
+
+    // For gaussian blur
+    float kernel[3][3] = {
+        {1/16.0f, 2/16.0f, 1/16.0f},
+        {2/16.0f, 4/16.0f, 2/16.0f},
+        {1/16.0f, 2/16.0f, 1/16.0f}
+    };
 
     for (int r = 0; r < map_size; ++r) {
         std::vector<float> row;
@@ -46,8 +73,7 @@ int main() {
 
         for (int r = 0; r < map_size; ++r) {
             for (int c = 0; c < map_size; ++c) {
-                float sum = 0.0f;
-                int count = 0;
+                float weightedSum = 0.0f;
 
                 // Get positions of neighboring cells (including diagonals)
                 for (int dr = -1; dr <= 1; ++dr) {
@@ -56,18 +82,19 @@ int main() {
                         int nc = c + dc;
 
                         if (nr >= 0 && nr < map_size && nc >= 0 && nc < map_size) {
-                            sum += current_map[nr][nc];
-                            count++;
+                            weightedSum += current_map[r+dr][c+dc] * kernel[dr+1][dc+1];
                         }
                     }
                 }
-
-                new_map[r][c] = sum / count;
+                new_map[r][c] = weightedSum;
             }
         }
 
         current_map = new_map;
     }
+
+    // Normalize the map values to stretch from 0 to 1
+    normalizeMap(current_map);
 
     for (int i = 0; i < rainstorms; ++i) {
         current_map = rainstorm(current_map);
