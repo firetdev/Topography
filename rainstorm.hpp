@@ -22,7 +22,7 @@ std::vector<std::vector<float>> rainstorm(std::vector<std::vector<float>> map) {
 
     // Create random rain positions within the region
     std::vector<std::vector<int>> rain_positions;
-    int active_rain_cells = 100;
+    int active_rain_cells = 500;
     
     std::uniform_int_distribution<int> x_dist(region[0], region[0] + region[2] - 1);
     std::uniform_int_distribution<int> y_dist(region[1], region[1] + region[3] - 1);
@@ -37,8 +37,8 @@ std::vector<std::vector<float>> rainstorm(std::vector<std::vector<float>> map) {
         for (auto& pos : rain_positions) {
             int x = pos[0];
             int y = pos[1];
-            if (map[x][y] > 0.1f) {
-                map[x][y] -= 0.1f;  // Erode the terrain at the rain position
+            if (map[x][y] > 0.03f) {
+                map[x][y] -= 0.03f;  // Erode the terrain at the rain position
             }
 
             // Make rain flow to lowest neighboring cell

@@ -21,28 +21,31 @@ void saveAsPPM(const std::vector<std::vector<float>>& map, const std::string& fi
 }
 
 int main() {
-    // Generate a random 100x100 map with values between 0 and 1
+    // Generate a random map with values between 0 and 1
     std::vector<std::vector<float>> current_map = {};
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dis(0.0f, 1.0f);
 
-    for (int r = 0; r < 100; ++r) {
+    int map_size = 1000;
+
+    int iterations = 50;  // Smoothing iterations
+    int rainstorms = 400;  // Number of rainstorm simulations
+
+    for (int r = 0; r < map_size; ++r) {
         std::vector<float> row;
-        for (int c = 0; c < 100; ++c) {
+        for (int c = 0; c < map_size; ++c) {
             row.push_back(dis(gen));
         }
         current_map.push_back(row);
     }
 
     // Apply smoothing to the map
-    int iterations = 10;
-
     for (int iter = 0; iter < iterations; ++iter) {
         std::vector<std::vector<float>> new_map = current_map;
 
-        for (int r = 0; r < 100; ++r) {
-            for (int c = 0; c < 100; ++c) {
+        for (int r = 0; r < map_size; ++r) {
+            for (int c = 0; c < map_size; ++c) {
                 float sum = 0.0f;
                 int count = 0;
 
@@ -52,7 +55,7 @@ int main() {
                         int nr = r + dr;
                         int nc = c + dc;
 
-                        if (nr >= 0 && nr < 100 && nc >= 0 && nc < 100) {
+                        if (nr >= 0 && nr < map_size && nc >= 0 && nc < map_size) {
                             sum += current_map[nr][nc];
                             count++;
                         }
@@ -66,16 +69,18 @@ int main() {
         current_map = new_map;
     }
 
-    std::vector<std::vector<float>> eroded_map = rainstorm(current_map);
+    for (int i = 0; i < rainstorms; ++i) {
+        current_map = rainstorm(current_map);
+    }
 
-    for (const auto& row : eroded_map) {
+    for (const auto& row : current_map) {
         for (const auto& value : row) {
             std::cout << value << " ";
         }
         std::cout << std::endl;
     }
 
-    saveAsPPM(eroded_map, "map.ppm");
+    saveAsPPM(current_map, "map.ppm");
 
     return 0;
 }
