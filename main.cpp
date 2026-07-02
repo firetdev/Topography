@@ -1,7 +1,24 @@
 #include <iostream>
 #include <vector>
 #include <random>
+#include <fstream>
 #include "rainstorm.hpp"
+
+void saveAsPPM(const std::vector<std::vector<float>>& map, const std::string& filename) {
+    std::ofstream ofs(filename);
+    ofs << "P3\n" << map.size() << " " << map[0].size() << "\n255\n";
+
+    for (const auto& row : map) {
+        for (float val : row) {
+            int color = static_cast<int>(val * 255.0f);
+            color = std::max(0, std::min(255, color));
+            ofs << color << " " << color << " " << color << " ";
+        }
+        ofs << "\n";
+    }
+
+    ofs.close();
+}
 
 int main() {
     // Generate a random 100x100 map with values between 0 and 1
@@ -57,6 +74,8 @@ int main() {
         }
         std::cout << std::endl;
     }
+
+    saveAsPPM(eroded_map, "map.ppm");
 
     return 0;
 }

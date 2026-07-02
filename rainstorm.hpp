@@ -37,7 +37,9 @@ std::vector<std::vector<float>> rainstorm(std::vector<std::vector<float>> map) {
         for (auto& pos : rain_positions) {
             int x = pos[0];
             int y = pos[1];
-            map[x][y] -= 0.1f;  // Erode the terrain at the rain position
+            if (map[x][y] > 0.1f) {
+                map[x][y] -= 0.1f;  // Erode the terrain at the rain position
+            }
 
             // Make rain flow to lowest neighboring cell
             std::vector<int> lowest = {x, y};
