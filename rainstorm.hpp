@@ -10,7 +10,8 @@ std::vector<std::vector<float>> rainstorm(std::vector<std::vector<float>> map) {
     std::mt19937 gen(rd());
     std::uniform_int_distribution<int> map_height_dis(0, map.size() - 1);
     std::uniform_int_distribution<int> map_width_dis(0, map[0].size() - 1);
-    std::uniform_int_distribution<int> area_dis(10, 50);
+    // Region size is between 1/10 and 2/3 of the map size
+    std::uniform_int_distribution<int> area_dis(std::min(map.size(), map[0].size()) / 10, std::min(map.size(), map[0].size()) / 1.5);
 
     std::vector<int> region = {map_height_dis(gen), map_width_dis(gen), area_dis(gen), area_dis(gen)};
     if (region[0] + region[2] >= map.size()) {
