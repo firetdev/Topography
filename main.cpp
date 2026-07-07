@@ -3,7 +3,7 @@
 #include <random>
 #include <fstream>
 #include "rainstorm.hpp"
-//
+
 void saveAsPPM(const std::vector<std::vector<float>>& map, const std::string& filename) {
     std::ofstream ofs(filename);
     ofs << "P3\n" << map.size() << " " << map[0].size() << "\n255\n";
