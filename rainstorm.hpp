@@ -21,7 +21,7 @@ std::vector<std::vector<float>> rainstorm(std::vector<std::vector<float>> map) {
         region[3] = map[0].size() - region[1] - 1;
     }
 
-    // Create random rain positions within the region
+    // Create Y random rain positions within the region
     std::vector<std::vector<int>> rain_positions;
     int active_rain_cells = 500;
     
